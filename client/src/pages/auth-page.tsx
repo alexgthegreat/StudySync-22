@@ -10,6 +10,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+
+// School options
+const SCHOOL_OPTIONS = [
+  "Bethlehem Central Middle School",
+  "Bethlehem Central High School"
+];
 
 // Login schema
 const loginSchema = z.object({
@@ -20,9 +28,14 @@ const loginSchema = z.object({
 // Registration schema
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
   displayName: z.string().min(2, "Display name must be at least 2 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   school: z.string().optional(),
+  agreedToTerms: z.boolean().refine(val => val === true, {
+    message: "You must agree to the terms to create an account",
+  }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -54,9 +67,12 @@ export default function AuthPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
+      firstName: "",
+      lastName: "",
       displayName: "",
       password: "",
       school: "",
+      agreedToTerms: false,
     },
   });
 
@@ -139,6 +155,34 @@ export default function AuthPage() {
               <TabsContent value="register">
                 <Form {...registerForm}>
                   <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={registerForm.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="First name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={registerForm.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Last name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <FormField
                       control={registerForm.control}
                       name="username"
@@ -159,7 +203,7 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Display Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your full name" {...field} />
+                            <Input placeholder="How you want to be known" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -172,7 +216,7 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Create a password" {...field} />
+                            <Input type="password" placeholder="Minimum 8 characters" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -183,11 +227,45 @@ export default function AuthPage() {
                       name="school"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>School (Optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Your school name" {...field} />
-                          </FormControl>
+                          <FormLabel>School</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select your school" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {SCHOOL_OPTIONS.map((school) => (
+                                <SelectItem key={school} value={school}>
+                                  {school}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={registerForm.control}
+                      name="agreedToTerms"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>
+                              I agree to use this platform safely and follow school rules
+                            </FormLabel>
+                            <FormMessage />
+                          </div>
                         </FormItem>
                       )}
                     />
@@ -203,9 +281,12 @@ export default function AuthPage() {
               </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <p className="text-sm text-gray-500">
-              By using StudyCollab, you agree to our Terms of Service and Privacy Policy.
+          <CardFooter className="flex flex-col items-center">
+            <p className="text-sm text-gray-700 mb-1 text-center">
+              By creating an account, you acknowledge that you will be held accountable for your actions on this platform.
+            </p>
+            <p className="text-xs text-gray-500 text-center">
+              Students must follow all Bethlehem Central School District policies on appropriate use of technology and academic integrity.
             </p>
           </CardFooter>
         </Card>

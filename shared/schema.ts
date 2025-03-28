@@ -6,17 +6,23 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
   displayName: text("display_name").notNull(),
   school: text("school"),
   avatarUrl: text("avatar_url"),
+  agreedToTerms: boolean("agreed_to_terms").default(false),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  firstName: true,
+  lastName: true,
   displayName: true,
   school: true,
   avatarUrl: true,
+  agreedToTerms: true,
 });
 
 export const groups = pgTable("groups", {
