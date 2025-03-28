@@ -293,51 +293,53 @@ export default function AuthPage() {
       </div>
 
       {/* Hero Section */}
-      <div className="md:w-1/2 w-full bg-gradient-to-br from-primary-600 to-accent-500 flex items-center justify-center p-8 md:p-12">
+      <div className="md:w-1/2 w-full bg-gradient-to-br from-primary-700 to-primary-900 flex items-center justify-center p-8 md:p-12">
         <div className="max-w-md text-white">
-          <h2 className="text-3xl font-bold mb-4">Boost Your Academic Success Together</h2>
+          <h2 className="text-3xl font-bold mb-4 text-white drop-shadow-sm">Boost Your Academic Success Together</h2>
           <ul className="space-y-4 mb-8">
             <li className="flex items-start">
-              <svg className="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-6 h-6 mr-2 flex-shrink-0 text-primary-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <div>
-                <strong className="block font-medium">Create & Join Study Groups</strong>
-                <span className="text-primary-100">Collaborate with classmates on specific subjects</span>
+                <strong className="block font-medium text-white">Create & Join Study Groups</strong>
+                <span className="text-primary-200">Collaborate with classmates on specific subjects</span>
               </div>
             </li>
             <li className="flex items-start">
-              <svg className="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-6 h-6 mr-2 flex-shrink-0 text-primary-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <div>
-                <strong className="block font-medium">Share Study Materials</strong>
-                <span className="text-primary-100">Upload documents, notes, and study guides</span>
+                <strong className="block font-medium text-white">Share Study Materials</strong>
+                <span className="text-primary-200">Upload documents, notes, and study guides</span>
               </div>
             </li>
             <li className="flex items-start">
-              <svg className="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-6 h-6 mr-2 flex-shrink-0 text-primary-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <div>
-                <strong className="block font-medium">Ask Questions & Get Help</strong>
-                <span className="text-primary-100">Post questions and collaborate on answers</span>
+                <strong className="block font-medium text-white">Ask Questions & Get Help</strong>
+                <span className="text-primary-200">Post questions and collaborate on answers</span>
               </div>
             </li>
             <li className="flex items-start">
-              <svg className="w-6 h-6 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-6 h-6 mr-2 flex-shrink-0 text-primary-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <div>
-                <strong className="block font-medium">Track Exams & Assignments</strong>
-                <span className="text-primary-100">Never miss important deadlines</span>
+                <strong className="block font-medium text-white">Track Exams & Assignments</strong>
+                <span className="text-primary-200">Never miss important deadlines</span>
               </div>
             </li>
           </ul>
-          <p className="text-primary-100 italic">
-            "StudyCollab has completely transformed how our students prepare for exams. The collaborative approach has led to higher grades across the board."
-          </p>
-          <p className="mt-2 font-medium">— Ms. Rodriguez, High School Teacher</p>
+          <div className="bg-primary-800/50 p-4 rounded-lg border border-primary-600">
+            <p className="text-primary-100 italic">
+              "StudyCollab has completely transformed how our students prepare for exams. The collaborative approach has led to higher grades across the board."
+            </p>
+            <p className="mt-2 font-medium text-white">— Ms. Rodriguez, High School Teacher</p>
+          </div>
         </div>
       </div>
     </div>
