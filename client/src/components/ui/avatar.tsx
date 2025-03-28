@@ -2,6 +2,7 @@ import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/lib/utils"
+import { User, Users } from "lucide-react"
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -45,4 +46,30 @@ const AvatarFallback = React.forwardRef<
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
-export { Avatar, AvatarImage, AvatarFallback }
+// Custom User Avatar component
+const UserAvatar = React.forwardRef<
+  React.ElementRef<typeof Avatar>,
+  React.ComponentPropsWithoutRef<typeof Avatar>
+>(({ className, ...props }, ref) => (
+  <Avatar ref={ref} className={cn("bg-indigo-100", className)} {...props}>
+    <AvatarFallback className="text-indigo-700">
+      <User className="h-6 w-6" />
+    </AvatarFallback>
+  </Avatar>
+))
+UserAvatar.displayName = "UserAvatar"
+
+// Custom Group Avatar component
+const GroupAvatar = React.forwardRef<
+  React.ElementRef<typeof Avatar>,
+  React.ComponentPropsWithoutRef<typeof Avatar>
+>(({ className, ...props }, ref) => (
+  <Avatar ref={ref} className={cn("bg-amber-100", className)} {...props}>
+    <AvatarFallback className="text-amber-700">
+      <Users className="h-6 w-6" />
+    </AvatarFallback>
+  </Avatar>
+))
+GroupAvatar.displayName = "GroupAvatar"
+
+export { Avatar, AvatarImage, AvatarFallback, UserAvatar, GroupAvatar }
