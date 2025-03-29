@@ -2,9 +2,15 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Create Express application
 const app = express();
+
+// Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Set trust proxy for environments behind a reverse proxy (Heroku, Render, etc.)
+app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -39,12 +45,20 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Error handling middleware
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    // Log the error for debugging purposes
+    console.error(err);
+    
+    // Determine status code and message
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    // Send appropriate error response
+    res.status(status).json({ 
+      message,
+      error: app.get('env') === 'development' ? err : {} 
+    });
   });
 
   // importantly only setup vite in development and after
@@ -56,12 +70,12 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
+  // Use environment variable for port or default to 5000
+  // This makes the app compatible with various hosting platforms
+  const port = process.env.PORT || 5000;
+  
   server.listen({
-    port,
+    port: Number(port),
     host: "0.0.0.0",
     reusePort: true,
   }, () => {

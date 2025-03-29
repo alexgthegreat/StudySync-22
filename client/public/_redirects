@@ -1,0 +1,6 @@
+# Netlify redirect rules
+# Handle SPA routing by redirecting all requests to index.html
+/*    /index.html   200
+
+# Proxy API requests to backend - this requires setting up a Netlify function or proxy
+/api/*  /.netlify/functions/proxy/:splat  200

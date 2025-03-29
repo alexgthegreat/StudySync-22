@@ -15,6 +15,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Setup WebSocket server
   setupWebsocketServer(httpServer);
+  
+  // Health check endpoint for Render and other hosting platforms
+  app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
 
   // Groups API
   app.get("/api/groups", async (req, res) => {
@@ -371,7 +376,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const groupId = parseInt(req.params.id);
       const group = await storage.getGroup(groupId);
-const isGroupMember = await storage.isUserInGroup(req.user.id, groupId) || group.createdBy === req.user.id;
+      
+      if (!group) {
+        return res.status(404).json({ message: "Group not found" });
+      }
+      
+      const isGroupMember = await storage.isUserInGroup(req.user.id, groupId) || group.createdBy === req.user.id;
       
       if (!isGroupMember) {
         return res.status(403).json({ message: "User is not a member of this group" });
