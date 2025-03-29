@@ -27,7 +27,9 @@ export function MaterialList({ materials, onUploadClick }: MaterialListProps) {
     ? materials 
     : materials.filter(m => m.subject === filter);
   
-  const uniqueSubjects = ['All Subjects', ...new Set(materials.map(m => m.subject).filter(Boolean))];
+  // Convert to array first to avoid TypeScript Set iteration error
+  const subjectsSet = new Set(materials.map(m => m.subject).filter(Boolean));
+  const uniqueSubjects = ['All Subjects', ...Array.from(subjectsSet)];
   
   const getIconClass = (type: string) => {
     switch (type.toLowerCase()) {

@@ -19,6 +19,7 @@ export default function MaterialsPage() {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Fetch all materials
   const { 
@@ -72,9 +73,16 @@ export default function MaterialsPage() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar mobileOpen={mobileMenuOpen} onCloseMobile={() => setMobileMenuOpen(false)} />
+      <Sidebar 
+        mobileOpen={mobileMenuOpen} 
+        onCloseMobile={() => setMobileMenuOpen(false)} 
+        onCollapseChange={(collapsed: boolean) => setSidebarCollapsed(collapsed)}
+      />
 
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div 
+        className={`flex-1 flex flex-col h-full overflow-hidden transition-all duration-300 ${
+          sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
+        }`}>
         <Header onMobileMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)} />
 
         <main className="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-6">
