@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
+import { Material, Group, Exam } from "@shared/schema";
 
 import { Sidebar } from "@/components/ui/sidebar";
 import { Header } from "@/components/ui/header";
@@ -22,19 +23,19 @@ export default function HomePage() {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   // Fetch user groups for avatar display and member counts
-  const { data: userGroups } = useQuery({
+  const { data: userGroups = [] } = useQuery<Group[]>({
     queryKey: ["/api/groups/my-groups"],
     enabled: !!user,
   });
 
   // Fetch recent study materials
-  const { data: recentMaterials } = useQuery({
+  const { data: recentMaterials = [] } = useQuery<Material[]>({
     queryKey: ["/api/materials/recent"],
     enabled: !!user,
   });
 
   // Fetch upcoming exams
-  const { data: upcomingExams } = useQuery({
+  const { data: upcomingExams = [] } = useQuery<Exam[]>({
     queryKey: ["/api/exams/upcoming"],
     enabled: !!user,
   });
@@ -46,12 +47,12 @@ export default function HomePage() {
     images: recentMaterials?.filter(m => ['image', 'jpg', 'jpeg', 'png'].includes(m.type)).length || 0,
   };
 
-  // Mock activity data - would be fetched from API in a real implementation
+  // Convert recent materials to activity format
   const recentActivities = recentMaterials?.slice(0, 4).map(material => ({
     type: 'file' as const,
-    title: `${material.uploader?.displayName || material.uploader?.username} uploaded a new study guide`,
+    title: `New study guide uploaded`,
     description: material.name,
-    timestamp: new Date(material.uploadedAt),
+    timestamp: material.uploadedAt ? new Date(material.uploadedAt) : new Date(),
     subject: material.subject || undefined,
     subjectColor: 'primary' as const
   })) || [];
@@ -186,7 +187,15 @@ export default function HomePage() {
             {/* Study Materials */}
             <div className="lg:col-span-2">
               <MaterialList 
-                materials={recentMaterials || []}
+                materials={recentMaterials.map(m => ({
+                  ...m,
+                  uploadedAt: m.uploadedAt || new Date(),
+                  subject: m.subject || undefined,
+                  uploader: {
+                    id: m.uploadedBy,
+                    username: "User"
+                  }
+                }))}
                 onUploadClick={() => setUploadDialogOpen(true)}
               />
             </div>
@@ -206,8 +215,8 @@ export default function HomePage() {
                       title={exam.title}
                       description={exam.description || ""}
                       date={new Date(exam.date)}
-                      location={exam.location}
-                      subject="AP Biology"
+                      location={exam.location || undefined}
+                      subject={exam.subject || "General"}
                       onJoinStudyGroup={() => {/* Navigate to study group */}}
                       onFindFlashcards={() => {/* Navigate to flashcards */}}
                     />

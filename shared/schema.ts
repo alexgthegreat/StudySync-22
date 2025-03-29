@@ -58,6 +58,7 @@ export const materials = pgTable("materials", {
   description: text("description"),
   type: text("type").notNull(),  // pdf, doc, image, link
   url: text("url").notNull(),
+  subject: text("subject"),
   groupId: integer("group_id"),
   uploadedBy: integer("uploaded_by").notNull(),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
@@ -68,6 +69,7 @@ export const insertMaterialSchema = createInsertSchema(materials).pick({
   description: true,
   type: true,
   url: true,
+  subject: true,
   groupId: true,
   uploadedBy: true,
 });
@@ -106,6 +108,7 @@ export const exams = pgTable("exams", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
+  subject: text("subject"),
   date: timestamp("date").notNull(),
   location: text("location"),
   groupId: integer("group_id"),
@@ -115,6 +118,7 @@ export const exams = pgTable("exams", {
 export const insertExamSchema = createInsertSchema(exams).pick({
   title: true,
   description: true,
+  subject: true,
   date: true,
   location: true,
   groupId: true,

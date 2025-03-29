@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user } = useAuth();
 
   const isActiveRoute = (route: string) => {
@@ -53,9 +53,9 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
       <nav className="flex-1 p-4 space-y-1.5">
         {navItems.map((item) => (
           <Link key={item.path} href={item.path}>
-            <a
+            <div
               className={cn(
-                "flex items-center py-2 px-4 rounded-lg transition-colors",
+                "flex items-center py-2 px-4 rounded-lg transition-colors cursor-pointer",
                 isActiveRoute(item.path)
                   ? "bg-primary text-primary-foreground font-medium"
                   : "hover:bg-accent hover:text-accent-foreground text-gray-700"
@@ -63,7 +63,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             >
               <span className="mr-3">{item.icon}</span>
               <span>{item.name}</span>
-            </a>
+            </div>
           </Link>
         ))}
       </nav>
@@ -84,7 +84,8 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             size="sm"
             className="w-full"
             onClick={() => {
-              window.location.href = '/groups';
+              // Use the setLocation from the component scope
+              setLocation('/groups');
             }}
           >
             <Users className="mr-2 h-4 w-4" />

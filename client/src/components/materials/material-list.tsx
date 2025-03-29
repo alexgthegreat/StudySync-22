@@ -2,12 +2,9 @@ import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Material as BaseMaterial } from '@shared/schema';
 
-interface Material {
-  id: number;
-  name: string;
-  type: string;
-  url: string;
+interface Material extends Omit<BaseMaterial, 'subject' | 'uploadedAt'> {
   uploadedAt: Date;
   uploader: {
     id: number;

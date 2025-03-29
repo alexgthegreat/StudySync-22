@@ -21,6 +21,7 @@ const uploadSchema = z.object({
   type: z.string().min(1, 'Material type is required'),
   url: z.string().min(1, 'URL is required'),
   groupId: z.number().optional(),
+  subject: z.string().optional(),
 });
 
 type UploadFormValues = z.infer<typeof uploadSchema>;
