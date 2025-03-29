@@ -120,15 +120,12 @@ export function setupAuth(app: Express) {
         if (!user) return res.status(401).json({ message: "Invalid credentials" });
         req.login(user, (err) => {
           if (err) return next(err);
+          // Remove password from response
           const { password, ...safeUser } = user;
           return res.status(200).json(safeUser);
         });
       })(req, res, next);
     }
-  });
-    // Remove password from response
-    const { password, ...safeUser } = req.user as SelectUser;
-    res.status(200).json(safeUser);
   });
 
   app.post("/api/logout", (req, res, next) => {
