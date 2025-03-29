@@ -80,10 +80,10 @@ export default function HomePage() {
           <div className="bg-gradient-to-r from-primary-600 to-accent-500 rounded-xl shadow-lg overflow-hidden mb-6">
             <div className="md:flex items-center">
               <div className="p-6 md:w-3/5">
-                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                   Welcome back, {user?.displayName || user?.username}!
                 </h1>
-                <p className="text-primary-100 mb-4">
+                <p className="text-gray-700 mb-4">
                   Continue collaborating with your classmates and boost your academic performance.
                 </p>
                 <div className="flex flex-wrap gap-3">
