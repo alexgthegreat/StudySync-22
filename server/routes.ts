@@ -370,7 +370,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const groupId = parseInt(req.params.id);
-      const isGroupMember = await storage.isUserInGroup(req.user.id, groupId);
+      const group = await storage.getGroup(groupId);
+const isGroupMember = await storage.isUserInGroup(req.user.id, groupId) || group.createdBy === req.user.id;
       
       if (!isGroupMember) {
         return res.status(403).json({ message: "User is not a member of this group" });

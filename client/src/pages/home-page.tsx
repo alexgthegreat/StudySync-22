@@ -179,7 +179,7 @@ export default function HomePage() {
                     />
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-gray-700 dark:text-gray-300">
                     No recent activity. Start collaborating with your classmates!
                   </div>
                 )}
@@ -233,7 +233,7 @@ export default function HomePage() {
                     />
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-gray-700 dark:text-gray-300">
                     No upcoming exams. Add an exam to keep track of important dates.
                   </div>
                 )}
