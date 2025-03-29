@@ -12,7 +12,8 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  Menu
+  Menu,
+  Bell
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,8 @@ export function Sidebar({ mobileOpen, onCloseMobile, onCollapseChange }: Sidebar
     { name: 'Materials', path: '/materials', icon: <FileText className="w-5 h-5" /> },
     { name: 'Forum', path: '/forum', icon: <MessageSquare className="w-5 h-5" /> },
     { name: 'Chat', path: '/chat', icon: <MessageSquare className="w-5 h-5" /> },
-    { name: 'Exams', path: '/exams', icon: <Calendar className="w-5 h-5" /> },
+    { name: 'Notifications', path: '/notifications', icon: <Bell className="w-5 h-5" /> },
+    { name: 'Calendar', path: '/calendar', icon: <Calendar className="w-5 h-5" /> },
   ];
 
   // Sidebar content
