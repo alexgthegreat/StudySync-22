@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { Sidebar } from "@/components/ui/sidebar";
-import { Calendar as CalendarIcon, Users, BookOpen } from "lucide-react";
+import { Calendar as CalendarIcon, Users, BookOpen, Menu } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { ExamCalendar } from "@/components/calendar/exam-calendar";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -127,33 +128,34 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar 
         mobileOpen={mobileMenuOpen} 
         onCloseMobile={() => setMobileMenuOpen(false)}
         onCollapseChange={setSidebarCollapsed}
       />
       
-      <div className={`flex-1 flex flex-col ${sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
+      <div className={cn(
+        "flex-1 flex flex-col relative transition-all duration-300",
+        sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
+      )}>
         {/* Mobile header */}
-        <div className="md:hidden flex items-center justify-between p-4 border-b">
+        <header className="md:hidden flex items-center justify-between p-4 border-b sticky top-0 bg-background z-10">
           <div className="flex items-center space-x-2">
-            <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-8 h-8 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838l-2.328.996.002 1.069c0 .358.186.687.484.87l.635.396a2 2 0 001.866 0l.634-.396a1.04 1.04 0 00.484-.87l.002-1.07 2.328-.996a1 1 0 11.788 1.838l-2.328.996L12 9.586v-.001l3.606-1.543a1 1 0 000-1.84l-7-3A1 1 0 0010.394 2.08z" />
             </svg>
-            <h1 className="text-xl font-bold">StudyCollab</h1>
+            <h1 className="text-xl font-bold truncate">StudyCollab</h1>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
           >
-            <span className="sr-only">Open menu</span>
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <Menu className="h-6 w-6" />
           </Button>
-        </div>
+        </header>
 
         {/* Main content */}
         <main className="flex-1 overflow-auto p-4 md:p-8">

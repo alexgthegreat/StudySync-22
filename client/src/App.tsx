@@ -83,8 +83,9 @@ function GroupsIndexPage() {
             <div key={group.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
               <h2 className="text-xl font-semibold mb-2">{group.name}</h2>
               <p className="text-gray-600 mb-4">{group.description || "No description available"}</p>
-              <Link href={`/groups/${group.id}`}>
-                <a className="text-blue-600 hover:underline">View Group</a>
+              <Link href={`/groups/${group.id}`} className="text-blue-600 hover:underline inline-flex items-center">
+                <Users className="mr-2 h-4 w-4" />
+                View Group
               </Link>
             </div>
           ))}
@@ -94,11 +95,9 @@ function GroupsIndexPage() {
           <Users className="w-12 h-12 mx-auto text-gray-300 mb-3" />
           <h2 className="text-xl font-medium mb-2">No Study Groups Available</h2>
           <p className="text-gray-500 mb-6">Be the first to create a study group!</p>
-          <Link href="/groups/create">
-            <a className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
-              <Users className="mr-2 h-4 w-4" />
-              Create a Group
-            </a>
+          <Link href="/groups/create" className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+            <Users className="mr-2 h-4 w-4" />
+            Create a Group
           </Link>
         </div>
       )}
@@ -153,11 +152,9 @@ function ChatIndexPage() {
                   'No messages yet'
                 }
               </p>
-              <Link href={`/chat/${group.id}`}>
-                <a className="text-blue-600 hover:underline flex items-center">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Open Chat
-                </a>
+              <Link href={`/chat/${group.id}`} className="text-blue-600 hover:underline flex items-center">
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Open Chat
               </Link>
             </div>
           ))}
@@ -167,11 +164,9 @@ function ChatIndexPage() {
           <MessageSquare className="w-12 h-12 mx-auto text-gray-300 mb-3" />
           <h2 className="text-xl font-medium mb-2">No Chat Rooms Available</h2>
           <p className="text-gray-500 mb-6">Join or create a study group to start chatting!</p>
-          <Link href="/groups">
-            <a className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
-              <Users className="mr-2 h-4 w-4" />
-              Browse Groups
-            </a>
+          <Link href="/groups" className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
+            <Users className="mr-2 h-4 w-4" />
+            Browse Groups
           </Link>
         </div>
       )}
