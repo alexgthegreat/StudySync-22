@@ -41,6 +41,14 @@ const registerSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+// Placeholder DevLoginButton component
+const DevLoginButton = () => {
+  return (
+    <Button className="mt-4 w-full" onClick={() => alert("Dev Login Triggered")}>Dev Login</Button>
+  );
+};
+
+
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
   const [location, navigate] = useLocation();
@@ -147,6 +155,7 @@ export default function AuthPage() {
                     >
                       {loginMutation.isPending ? "Logging in..." : "Login"}
                     </Button>
+                    <DevLoginButton />
                   </form>
                 </Form>
               </TabsContent>

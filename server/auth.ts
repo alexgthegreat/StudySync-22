@@ -100,24 +100,32 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", async (req, res, next) => {
-  if (req.body.username === 'test' && req.body.password === 'test123') {
-    const testUser = {
-      id: 9999,
-      username: 'test',
-      displayName: 'John Doe',
-      email: 'test@example.com',
-      school: 'Test University',
-      avatarUrl: null,
-      createdAt: new Date()
-    };
-    req.login(testUser, (err) => {
-      if (err) return next(err);
-      return res.status(200).json(testUser);
-    });
-  } else {
-    passport.authenticate("local")(req, res, next);
-  }
-});
+    if (req.body.username === 'dev' && req.body.password === 'dev123') {
+      const devUser = {
+        id: 9999,
+        username: 'dev',
+        displayName: 'Developer Account',
+        email: 'dev@example.com',
+        school: 'Development University',
+        avatarUrl: null,
+        createdAt: new Date()
+      };
+      req.login(devUser, (err) => {
+        if (err) return next(err);
+        return res.status(200).json(devUser);
+      });
+    } else {
+      passport.authenticate("local", (err, user) => {
+        if (err) return next(err);
+        if (!user) return res.status(401).json({ message: "Invalid credentials" });
+        req.login(user, (err) => {
+          if (err) return next(err);
+          const { password, ...safeUser } = user;
+          return res.status(200).json(safeUser);
+        });
+      })(req, res, next);
+    }
+  });
     // Remove password from response
     const { password, ...safeUser } = req.user as SelectUser;
     res.status(200).json(safeUser);
