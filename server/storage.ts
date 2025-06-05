@@ -71,6 +71,7 @@ export class SupabaseStorage implements IStorage {
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
+    if (!db) throw new Error('Database not properly configured');
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
     return result[0];
   }

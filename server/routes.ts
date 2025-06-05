@@ -3,8 +3,35 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { setupWebsocketServer } from "./websocket";
+import { uploadFile, deleteFile, supabaseConfig } from "./supabase";
 import { z } from "zod";
 import { insertGroupSchema, insertMaterialSchema, insertPostSchema, insertCommentSchema, insertExamSchema } from "@shared/schema";
+import multer from "multer";
+import path from "path";
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Allow common file types
+    const allowedTypes = [
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+      'application/pdf', 'application/msword', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain', 'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ];
+    
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up the HTTP server
@@ -19,6 +46,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint for Render and other hosting platforms
   app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
+  // Supabase configuration endpoint
+  app.get('/api/config/supabase', (req, res) => {
+    res.json(supabaseConfig);
   });
 
   // Groups API
@@ -145,6 +177,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(memberDetails);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch group members" });
+    }
+  });
+
+  // File upload API with Supabase storage
+  app.post("/api/upload", upload.single('file'), async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file provided" });
+      }
+
+      // Upload file to Supabase storage
+      const fileUrl = await uploadFile(req.file.buffer, req.file.originalname);
+      
+      // Extract file path from URL for storage reference
+      const urlParts = fileUrl.split('/');
+      const storageKey = urlParts[urlParts.length - 1];
+
+      // Determine file type based on mimetype
+      let fileType = 'file';
+      if (req.file.mimetype.startsWith('image/')) {
+        fileType = 'image';
+      } else if (req.file.mimetype === 'application/pdf') {
+        fileType = 'pdf';
+      } else if (req.file.mimetype.includes('word') || req.file.mimetype.includes('document')) {
+        fileType = 'doc';
+      }
+
+      res.status(200).json({
+        url: fileUrl,
+        storageKey,
+        fileName: req.file.originalname,
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype,
+        type: fileType
+      });
+    } catch (error) {
+      console.error('File upload error:', error);
+      res.status(500).json({ message: "File upload failed", error: error.message });
     }
   });
 
