@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { formatDistanceToNow } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Send } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Loader2, Send, Paperclip, FileText, Image as ImageIcon } from 'lucide-react';
+import { subscribeToGroupMessages, unsubscribeFromChannel } from '@/lib/supabase';
+import { FileUpload } from '@/components/materials/file-upload';
+import { apiRequest } from '@/lib/queryClient';
 
 interface Message {
   id: number;

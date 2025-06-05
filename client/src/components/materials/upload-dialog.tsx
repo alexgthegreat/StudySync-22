@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
+import { FileUpload } from './file-upload';
 
 // Define form schema
 const uploadSchema = z.object({
@@ -146,53 +147,17 @@ export function UploadDialog({ open, onClose, groupId, availableGroups = [] }: U
               />
               
               <TabsContent value="file" className="space-y-4 mt-0">
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>File Type</FormLabel>
-                      <Select 
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          form.setValue('type', value);
-                        }} 
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select file type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="pdf">PDF Document</SelectItem>
-                          <SelectItem value="doc">Word Document</SelectItem>
-                          <SelectItem value="ppt">PowerPoint</SelectItem>
-                          <SelectItem value="image">Image</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>File URL</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Enter URL to the file" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-2">
+                  <FormLabel>Upload File</FormLabel>
+                  <FileUpload onFileUploaded={(fileData) => {
+                    form.setValue('url', fileData.url);
+                    form.setValue('type', fileData.type);
+                    // Auto-populate name if empty
+                    if (!form.getValues('name')) {
+                      form.setValue('name', fileData.fileName.replace(/\.[^/.]+$/, ""));
+                    }
+                  }} />
+                </div>
               </TabsContent>
               
               <TabsContent value="link" className="space-y-4 mt-0">
