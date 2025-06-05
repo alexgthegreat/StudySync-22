@@ -2,8 +2,18 @@ import { users, groups, groupMembers, materials, posts, comments, exams, message
 import type { User, InsertUser, Group, InsertGroup, GroupMember, InsertGroupMember, Material, InsertMaterial, Post, InsertPost, Comment, InsertComment, Exam, InsertExam, Message, InsertMessage } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { eq, desc, and, gte } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
+
+// Initialize Supabase connection (only if DATABASE_URL is properly formatted)
+let db: any = null;
+if (process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith('postgresql://')) {
+  const sql = neon(process.env.DATABASE_URL);
+  db = drizzle(sql);
+}
 
 // Define the storage interface
 export interface IStorage {
@@ -48,6 +58,177 @@ export interface IStorage {
 
   // Session store for authentication
   sessionStore: ReturnType<typeof createMemoryStore>;
+}
+
+export class SupabaseStorage implements IStorage {
+  sessionStore: ReturnType<typeof createMemoryStore>;
+
+  constructor() {
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000, // Clear expired sessions every 24h
+    });
+  }
+
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  // Group operations
+  async createGroup(group: InsertGroup): Promise<Group> {
+    const result = await db.insert(groups).values(group).returning();
+    return result[0];
+  }
+
+  async getGroup(id: number): Promise<Group | undefined> {
+    const result = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getGroups(): Promise<Group[]> {
+    return await db.select().from(groups).orderBy(desc(groups.createdAt));
+  }
+
+  async getUserGroups(userId: number): Promise<Group[]> {
+    const result = await db
+      .select({
+        id: groups.id,
+        name: groups.name,
+        description: groups.description,
+        isActive: groups.isActive,
+        createdBy: groups.createdBy,
+        createdAt: groups.createdAt,
+      })
+      .from(groups)
+      .innerJoin(groupMembers, eq(groups.id, groupMembers.groupId))
+      .where(eq(groupMembers.userId, userId))
+      .orderBy(desc(groups.createdAt));
+    
+    return result;
+  }
+
+  async getPopularGroups(limit: number = 5): Promise<Group[]> {
+    return await db.select().from(groups).limit(limit).orderBy(desc(groups.createdAt));
+  }
+
+  // Group members
+  async addGroupMember(member: InsertGroupMember): Promise<GroupMember> {
+    const result = await db.insert(groupMembers).values(member).returning();
+    return result[0];
+  }
+
+  async getGroupMembers(groupId: number): Promise<GroupMember[]> {
+    return await db.select().from(groupMembers).where(eq(groupMembers.groupId, groupId));
+  }
+
+  async isUserInGroup(userId: number, groupId: number): Promise<boolean> {
+    const result = await db
+      .select()
+      .from(groupMembers)
+      .where(and(eq(groupMembers.userId, userId), eq(groupMembers.groupId, groupId)))
+      .limit(1);
+    return result.length > 0;
+  }
+
+  // Materials
+  async createMaterial(material: InsertMaterial): Promise<Material> {
+    const result = await db.insert(materials).values(material).returning();
+    return result[0];
+  }
+
+  async getMaterials(filters: { groupId?: number } = {}): Promise<Material[]> {
+    let query = db.select().from(materials);
+    
+    if (filters.groupId) {
+      query = query.where(eq(materials.groupId, filters.groupId));
+    }
+    
+    return await query.orderBy(desc(materials.uploadedAt));
+  }
+
+  async getRecentMaterials(limit: number = 5): Promise<Material[]> {
+    return await db.select().from(materials).limit(limit).orderBy(desc(materials.uploadedAt));
+  }
+
+  // Posts
+  async createPost(post: InsertPost): Promise<Post> {
+    const result = await db.insert(posts).values(post).returning();
+    return result[0];
+  }
+
+  async getPosts(filters: { groupId?: number } = {}): Promise<Post[]> {
+    let query = db.select().from(posts);
+    
+    if (filters.groupId) {
+      query = query.where(eq(posts.groupId, filters.groupId));
+    }
+    
+    return await query.orderBy(desc(posts.createdAt));
+  }
+
+  // Comments
+  async createComment(comment: InsertComment): Promise<Comment> {
+    const result = await db.insert(comments).values(comment).returning();
+    return result[0];
+  }
+
+  async getPostComments(postId: number): Promise<Comment[]> {
+    return await db.select().from(comments).where(eq(comments.postId, postId)).orderBy(desc(comments.createdAt));
+  }
+
+  // Exams
+  async createExam(exam: InsertExam): Promise<Exam> {
+    const result = await db.insert(exams).values(exam).returning();
+    return result[0];
+  }
+
+  async getExams(filters: { userId?: number, groupId?: number } = {}): Promise<Exam[]> {
+    let query = db.select().from(exams);
+    
+    if (filters.groupId) {
+      query = query.where(eq(exams.groupId, filters.groupId));
+    } else if (filters.userId) {
+      query = query.where(eq(exams.createdBy, filters.userId));
+    }
+    
+    return await query.orderBy(exams.date);
+  }
+
+  async getUpcomingExams(userId: number, limit: number = 3): Promise<Exam[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(exams)
+      .where(and(eq(exams.createdBy, userId), gte(exams.date, now)))
+      .limit(limit)
+      .orderBy(exams.date);
+  }
+
+  // Messages
+  async createMessage(message: InsertMessage): Promise<Message> {
+    const result = await db.insert(messages).values(message).returning();
+    return result[0];
+  }
+
+  async getGroupMessages(groupId: number, limit: number = 100): Promise<Message[]> {
+    return await db
+      .select()
+      .from(messages)
+      .where(eq(messages.groupId, groupId))
+      .limit(limit)
+      .orderBy(desc(messages.sentAt));
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -298,4 +479,5 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use SupabaseStorage if database is properly configured, otherwise fallback to MemStorage
+export const storage = db ? new SupabaseStorage() : new MemStorage();

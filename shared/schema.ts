@@ -58,6 +58,10 @@ export const materials = pgTable("materials", {
   description: text("description"),
   type: text("type").notNull(),  // pdf, doc, image, link
   url: text("url").notNull(),
+  fileName: text("file_name"),
+  fileSize: integer("file_size"),
+  mimeType: text("mime_type"),
+  storageKey: text("storage_key"), // Supabase storage path
   subject: text("subject"),
   groupId: integer("group_id"),
   uploadedBy: integer("uploaded_by").notNull(),
@@ -69,6 +73,10 @@ export const insertMaterialSchema = createInsertSchema(materials).pick({
   description: true,
   type: true,
   url: true,
+  fileName: true,
+  fileSize: true,
+  mimeType: true,
+  storageKey: true,
   subject: true,
   groupId: true,
   uploadedBy: true,
