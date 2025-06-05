@@ -34,7 +34,7 @@ export function ChatInterface({ groupId, groupName }: ChatInterfaceProps) {
   const { user } = useAuth();
   const [message, setMessage] = useState('');
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
-  const [realtimeMessages, setRealtimeMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -49,7 +49,7 @@ export function ChatInterface({ groupId, groupName }: ChatInterfaceProps) {
   // Initialize messages from API
   useEffect(() => {
     if (initialMessages) {
-      setMessages(initialMessages);
+      setMessages(Array.isArray(initialMessages) ? initialMessages : []);
     }
   }, [initialMessages]);
   
@@ -105,6 +105,16 @@ export function ChatInterface({ groupId, groupName }: ChatInterfaceProps) {
     };
   }, [user, groupId]);
   
+  // Send message mutation
+  const sendMessageMutation = useMutation({
+    mutationFn: async (messageData: { content: string; groupId: number }) => {
+      return apiRequest(`/api/groups/${messageData.groupId}/messages`, 'POST', messageData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/groups/${groupId}/messages`] });
+    }
+  });
+
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -115,7 +125,7 @@ export function ChatInterface({ groupId, groupName }: ChatInterfaceProps) {
     
     if (!message.trim() || !socket || !isConnected || !user) return;
     
-    // Send message through WebSocket
+    // Send message through WebSocket and API
     socket.send(JSON.stringify({
       type: 'message',
       userId: user.id,
@@ -125,6 +135,12 @@ export function ChatInterface({ groupId, groupName }: ChatInterfaceProps) {
       username: user.username,
       displayName: user.displayName
     }));
+    
+    // Also send through API for persistence
+    sendMessageMutation.mutate({
+      content: message,
+      groupId
+    });
     
     setMessage('');
   };
