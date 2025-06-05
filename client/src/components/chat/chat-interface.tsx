@@ -33,10 +33,12 @@ interface ChatInterfaceProps {
 export function ChatInterface({ groupId, groupName }: ChatInterfaceProps) {
   const { user } = useAuth();
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+  const [realtimeMessages, setRealtimeMessages] = useState<Message[]>([]);
+  const queryClient = useQueryClient();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Get initial messages from API
   const { data: initialMessages, isLoading } = useQuery({
